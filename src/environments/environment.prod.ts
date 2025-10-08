@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://your-firebase-function-url.cloudfunctions.net/api',
+  apiUrl: 'https://api-jafohyfypq-uc.a.run.app/api',
 };
