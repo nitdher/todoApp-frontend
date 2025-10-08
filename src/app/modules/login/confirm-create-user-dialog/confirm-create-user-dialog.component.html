@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Crear nuevo usuario</h2>
+
+<mat-dialog-content>
+  <p>El usuario con correo <strong>{{ data.email }}</strong> no existe.</p>
+  <p>¿Deseas crear una cuenta nueva?</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="onConfirm()">Crear</button>
+</mat-dialog-actions>
