@@ -1,0 +1,25 @@
+.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+mat-dialog-content {
+  padding: 1.5rem 0;
+  min-width: 400px;
+
+  @media (max-width: 500px) {
+    min-width: auto;
+  }
+}
+
+button mat-spinner {
+  display: inline-block;
+  margin: 0 auto;
+}
