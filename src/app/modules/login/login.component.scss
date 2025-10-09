@@ -3,31 +3,151 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 1rem;
+  padding: 2rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+
+  // Efecto de fondo animado (círculos decorativos)
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    pointer-events: none;
+  }
+
+  &::before {
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    right: -100px;
+  }
+
+  &::after {
+    width: 200px;
+    height: 200px;
+    bottom: -50px;
+    left: -50px;
+  }
 }
 
 .login-card {
   width: 100%;
-  max-width: 400px;
-  padding: 2rem;
+  max-width: 550px;
+  min-height: 450px;
+  padding: 4rem 3.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  mat-card-header {
+    margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    mat-card-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-align: center;
+      color: #333;
+      margin: 0 0 0.75rem 0;
+      letter-spacing: -0.5px;
+    }
+
+    mat-card-subtitle {
+      font-size: 1.125rem;
+      text-align: center;
+      color: #666;
+      margin: 0;
+      font-weight: 400;
+    }
+  }
+
+  mat-card-content {
+    padding: 0;
+  }
+
+  // Mejorar espaciado en tablets
+  @media (max-width: 768px) {
+    max-width: 500px;
+    padding: 3rem 2.5rem;
+    min-height: 400px;
+  }
+
+  // Mejorar espaciado en móviles
+  @media (max-width: 600px) {
+    max-width: 100%;
+    padding: 2.5rem 2rem;
+    min-height: 380px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+    mat-card-header {
+      margin-bottom: 2.5rem;
+
+      mat-card-title {
+        font-size: 2rem;
+      }
+
+      mat-card-subtitle {
+        font-size: 1rem;
+      }
+    }
+  }
 }
 
 .full-width {
   width: 100%;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+
+  mat-form-field {
+    font-size: 1.125rem;
+
+    .mat-mdc-form-field-infix {
+      min-height: 56px;
+    }
+
+    input {
+      font-size: 1.125rem;
+      padding: 1rem 0;
+    }
+  }
 }
 
 .error-message {
-  color: #f44336;
+  color: #d32f2f;
   font-size: 0.875rem;
   margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #ffebee;
+  border-radius: 8px;
   text-align: center;
+  font-weight: 500;
 }
 
 button {
-  margin-top: 1rem;
-  height: 48px;
+  margin-top: 2rem;
+  height: 56px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+
+  &:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(63, 81, 181, 0.4);
+  }
+
+  &:not(:disabled):active {
+    transform: translateY(0);
+  }
 
   mat-spinner {
     display: inline-block;

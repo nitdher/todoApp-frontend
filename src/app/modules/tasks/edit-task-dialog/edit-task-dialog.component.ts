@@ -5,6 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { TaskService } from '../../../core/services/task.service';
 
 @Component({
@@ -19,7 +20,16 @@ import { TaskService } from '../../../core/services/task.service';
     MatProgressSpinnerModule
   ],
   templateUrl: './edit-task-dialog.component.html',
-  styleUrl: './edit-task-dialog.component.scss'
+  styleUrl: './edit-task-dialog.component.scss',
+  animations: [
+    // Animación para el contenido del diálogo
+    trigger('dialogContent', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(0.9)' }),
+        animate('250ms ease-out', style({ opacity: 1, transform: 'scale(1)' }))
+      ])
+    ])
+  ]
 })
 export class EditTaskDialogComponent {
   private readonly fb = inject(FormBuilder);

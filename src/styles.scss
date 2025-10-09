@@ -1,4 +1,148 @@
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Inter, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  font-family: Inter, "Helvetica Neue", sans-serif;
+}
+
+/* ==============================================
+   ACCESIBILIDAD - ESTILOS GLOBALES
+   ============================================== */
+
+/* Mejorar estilos de focus para navegación por teclado */
+*:focus-visible {
+  outline: 2px solid #3f51b5;
+  outline-offset: 2px;
+}
+
+/* Clase para ocultar elementos visualmente pero mantenerlos accesibles */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border-width: 0 !important;
+}
+
+/* Mejorar contraste en links */
+a {
+  color: #1a237e; // Color más oscuro para mejor contraste (WCAG AA)
+  text-decoration: underline;
+
+  &:hover, &:focus {
+    color: #0d47a1;
+    text-decoration: none;
+  }
+
+  &:visited {
+    color: #4a148c;
+  }
+}
+
+/* Asegurar que los botones sean accesibles */
+button {
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+/* Mejorar contraste en textos de ayuda */
+.mat-mdc-form-field-hint {
+  color: #424242 !important; // Mejor contraste que el gris por defecto
+}
+
+/* ==============================================
+   SNACKBARS - ESTILOS PERSONALIZADOS
+   ============================================== */
+
+.success-snackbar {
+  .mdc-snackbar__surface {
+    background-color: #2e7d32 !important; // Verde más oscuro para mejor contraste
+    color: white !important;
+  }
+
+  .mat-mdc-snack-bar-label {
+    color: white !important;
+  }
+
+  .mat-mdc-button {
+    color: white !important;
+  }
+}
+
+.error-snackbar {
+  .mdc-snackbar__surface {
+    background-color: #c62828 !important; // Rojo más oscuro para mejor contraste
+    color: white !important;
+  }
+
+  .mat-mdc-snack-bar-label {
+    color: white !important;
+  }
+
+  .mat-mdc-button {
+    color: white !important;
+  }
+}
+
+/* ==============================================
+   MEJORAS DE RESPONSIVE Y UX
+   ============================================== */
+
+/* Transiciones suaves para elementos interactivos */
+button, a, input, textarea, select {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Mejorar área de click/tap en dispositivos móviles */
+@media (max-width: 768px) {
+  button, a {
+    min-height: 44px; // Recomendación de accesibilidad (mínimo 44x44px)
+    min-width: 44px;
+  }
+}
+
+/* ==============================================
+   DIÁLOGOS - ESTILOS GLOBALES
+   ============================================== */
+
+// Mejorar apariencia de todos los diálogos
+.mat-mdc-dialog-container {
+  overflow-x: hidden !important;
+
+  .mdc-dialog__surface {
+    border-radius: 16px !important;
+    padding: 2rem !important;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2) !important;
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+
+    @media (max-width: 600px) {
+      padding: 1.5rem !important;
+      margin: 1rem !important;
+    }
+  }
+}
+
+// Eliminar scroll horizontal en todos los diálogos
+.cdk-overlay-pane {
+  max-width: 95vw !important;
+}
+
+mat-dialog-content {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+}
+
+// Backdrop más oscuro para mejor contraste
+.cdk-overlay-dark-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}

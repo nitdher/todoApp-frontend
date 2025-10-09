@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../../core/services/auth.service';
 import { UserService } from '../../core/services/user.service';
 import { ConfirmCreateUserDialogComponent } from './confirm-create-user-dialog/confirm-create-user-dialog.component';
@@ -25,7 +26,16 @@ import { ConfirmCreateUserDialogComponent } from './confirm-create-user-dialog/c
     MatProgressSpinnerModule
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrl: './login.component.scss',
+  animations: [
+    // Animación para la aparición del card de login
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(30px) scale(0.95)' }),
+        animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0) scale(1)' }))
+      ])
+    ])
+  ]
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
@@ -74,7 +84,8 @@ export class LoginComponent {
 
   private openConfirmDialog(email: string): void {
     const dialogRef = this.dialog.open(ConfirmCreateUserDialogComponent, {
-      width: '400px',
+      width: '600px',
+      maxWidth: '90vw',
       data: { email }
     });
 
