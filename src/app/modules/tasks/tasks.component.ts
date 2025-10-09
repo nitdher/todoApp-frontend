@@ -11,11 +11,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 import { AuthService } from '../../core/services/auth.service';
 import { TaskService } from '../../core/services/task.service';
 import { Task } from '../../core/interfaces/task.interface';
 import { EditTaskDialogComponent } from './edit-task-dialog/edit-task-dialog.component';
+import { ConfirmDeleteDialogComponent } from './confirm-delete-dialog/confirm-delete-dialog.component';
 
 @Component({
   selector: 'app-tasks',
@@ -32,10 +35,35 @@ import { EditTaskDialogComponent } from './edit-task-dialog/edit-task-dialog.com
     MatIconModule,
     MatDialogModule,
     MatProgressSpinnerModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatSnackBarModule
   ],
   templateUrl: './tasks.component.html',
-  styleUrl: './tasks.component.scss'
+  styleUrl: './tasks.component.scss',
+  animations: [
+    // Animación para la aparición de cards y elementos principales
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('400ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+
+    // Animación para la lista de tareas con stagger effect
+    trigger('listAnimation', [
+      transition('* => *', [
+        query(':enter', [
+          style({ opacity: 0, transform: 'translateX(-20px)' }),
+          stagger(50, [
+            animate('300ms ease-out', style({ opacity: 1, transform: 'translateX(0)' }))
+          ])
+        ], { optional: true }),
+        query(':leave', [
+          animate('200ms ease-in', style({ opacity: 0, transform: 'translateX(20px)' }))
+        ], { optional: true })
+      ])
+    ])
+  ]
 })
 export class TasksComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
@@ -43,10 +71,12 @@ export class TasksComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
 
   public readonly tasks = signal<Task[]>([]);
   public readonly isLoading = signal<boolean>(false);
   public readonly errorMessage = signal<string>('');
+  public readonly liveAnnouncement = signal<string>('');
   public currentUser = this.authService.getCurrentUser();
 
   public readonly displayedColumns: string[] = ['title', 'description', 'createdAt', 'completed', 'actions'];
@@ -81,6 +111,9 @@ export class TasksComponent implements OnInit {
     });
   }
 
+  /**
+   * Maneja el envío del formulario para crear una nueva tarea
+   */
   public onSubmit(): void {
     if (this.taskForm.invalid) {
       this.taskForm.markAllAsTouched();
@@ -103,49 +136,81 @@ export class TasksComponent implements OnInit {
         this.taskForm.reset();
         this.loadTasks();
         this.errorMessage.set('');
+        this.showSnackBar('✓ Tarea creada exitosamente', 'success');
       },
       error: () => {
         this.errorMessage.set('Error al crear la tarea');
         this.isLoading.set(false);
+        this.showSnackBar('✗ Error al crear la tarea', 'error');
       }
     });
   }
 
+  /**
+   * Alterna el estado de completado de una tarea
+   */
   public toggleCompleted(task: Task): void {
     if (!task.id) return;
 
     this.taskService.updateTask(task.id, { completed: !task.completed }).subscribe({
       next: () => {
         this.loadTasks();
+        const message = !task.completed
+          ? '✓ Tarea marcada como completada'
+          : '✓ Tarea marcada como pendiente';
+        this.showSnackBar(message, 'success');
+        this.announce(message);
       },
       error: () => {
         this.errorMessage.set('Error al actualizar la tarea');
+        this.showSnackBar('✗ Error al actualizar la tarea', 'error');
+        this.announce('Error al actualizar la tarea');
       }
     });
   }
 
+  /**
+   * Abre el diálogo para editar una tarea
+   */
   public editTask(task: Task): void {
     const dialogRef = this.dialog.open(EditTaskDialogComponent, {
-      width: '500px',
+      width: '600px',
+      maxWidth: '90vw',
       data: { task }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.loadTasks();
+        this.showSnackBar('✓ Tarea actualizada exitosamente', 'success');
       }
     });
   }
 
+  /**
+   * Abre el diálogo de confirmación para eliminar una tarea
+   */
   public deleteTask(task: Task): void {
-    if (!task.id || !confirm('¿Estás seguro de eliminar esta tarea?')) return;
+    if (!task.id) return;
 
-    this.taskService.deleteTask(task.id).subscribe({
-      next: () => {
-        this.loadTasks();
-      },
-      error: () => {
-        this.errorMessage.set('Error al eliminar la tarea');
+    const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      data: { taskTitle: task.title }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed && task.id) {
+        this.taskService.deleteTask(task.id).subscribe({
+          next: () => {
+            this.loadTasks();
+            this.showSnackBar('✓ Tarea eliminada exitosamente', 'success');
+          },
+          error: () => {
+            this.errorMessage.set('Error al eliminar la tarea');
+            this.showSnackBar('✗ Error al eliminar la tarea', 'error');
+          }
+        });
       }
     });
   }
@@ -185,5 +250,26 @@ export class TasksComponent implements OnInit {
 
   public getPendingCount(): number {
     return this.tasks().filter(task => !task.completed).length;
+  }
+
+  /**
+   * Muestra un snackbar con el mensaje y estilo especificado
+   */
+  private showSnackBar(message: string, type: 'success' | 'error'): void {
+    this.snackBar.open(message, 'Cerrar', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: [`${type}-snackbar`]
+    });
+  }
+
+  /**
+   * Anuncia un mensaje a los lectores de pantalla
+   */
+  private announce(message: string): void {
+    this.liveAnnouncement.set(message);
+    // Limpiar después de 1 segundo para permitir nuevos anuncios
+    setTimeout(() => this.liveAnnouncement.set(''), 1000);
   }
 }

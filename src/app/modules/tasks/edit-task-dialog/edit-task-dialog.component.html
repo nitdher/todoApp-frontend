@@ -1,7 +1,7 @@
-<h2 mat-dialog-title>Editar Tarea</h2>
+<h2 mat-dialog-title id="edit-dialog-title">Editar Tarea</h2>
 
-<mat-dialog-content>
-  <form [formGroup]="editForm">
+<mat-dialog-content @dialogContent role="document" aria-labelledby="edit-dialog-title">
+  <form [formGroup]="editForm" aria-label="Formulario de edición de tarea">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Título</mat-label>
       <input
@@ -9,9 +9,12 @@
         type="text"
         formControlName="title"
         [disabled]="isLoading()"
+        aria-required="true"
+        aria-describedby="edit-title-hint"
       />
+      <mat-hint id="edit-title-hint">Entre 3 y 100 caracteres</mat-hint>
       @if (editForm.get('title')?.touched && editForm.get('title')?.invalid) {
-        <mat-error>{{ getErrorMessage('title') }}</mat-error>
+        <mat-error role="alert">{{ getErrorMessage('title') }}</mat-error>
       }
     </mat-form-field>
 
@@ -22,14 +25,17 @@
         formControlName="description"
         rows="4"
         [disabled]="isLoading()"
+        aria-required="true"
+        aria-describedby="edit-description-hint"
       ></textarea>
+      <mat-hint id="edit-description-hint">Mínimo 10 caracteres, máximo 500</mat-hint>
       @if (editForm.get('description')?.touched && editForm.get('description')?.invalid) {
-        <mat-error>{{ getErrorMessage('description') }}</mat-error>
+        <mat-error role="alert">{{ getErrorMessage('description') }}</mat-error>
       }
     </mat-form-field>
 
     @if (errorMessage()) {
-      <div class="error-message">
+      <div class="error-message" role="alert" aria-live="polite">
         {{ errorMessage() }}
       </div>
     }
@@ -37,12 +43,23 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()" [disabled]="isLoading()">
+  <button
+    mat-button
+    (click)="onCancel()"
+    [disabled]="isLoading()"
+    aria-label="Cancelar edición de tarea"
+  >
     Cancelar
   </button>
-  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="isLoading()">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSave()"
+    [disabled]="isLoading()"
+    [attr.aria-label]="isLoading() ? 'Guardando cambios, por favor espere' : 'Guardar cambios de la tarea'"
+  >
     @if (isLoading()) {
-      <mat-spinner diameter="20"></mat-spinner>
+      <mat-spinner diameter="20" aria-label="Guardando"></mat-spinner>
     } @else {
       Guardar
     }
