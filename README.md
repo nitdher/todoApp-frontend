@@ -37,7 +37,7 @@ export const environment = {
 
 ```bash
 # Modo desarrollo
-pnpm start
+pnpm dev
 # Aplicación disponible en http://localhost:4200
 
 # Build de producción
